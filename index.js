@@ -15,7 +15,14 @@ app.use(express.json());
       pickupAddress: '123 Main St',
       pickupTime: '1015'
     };
-    await db.create(john);
+    try {
+      await db.create(john);
+    } catch (error) {
+      // Assuming you're using Express.js or a similar framework
+      res.status(500).send('Already seeded');
+
+      return;
+    }
 
     const baby = {
       id: 2,
@@ -64,15 +71,20 @@ app.use(express.json());
   //updatewebsite by id
   app.get('/updateWebsite', async (req, res) => {
     const id = req.query.id;
-    const website = req.query.website;    
+    const website = req.query.website;
     await db.updateWebsite(id, website);
     res.status(200).send(`Record updated with id ${id}`);
   });
 
   //when a user requests / then return the api-home.html
   app.get('/', (req, res) => {
-      res.sendFile('api-home.html', { root: __dirname });
-    });
+    res.sendFile('index.html', { root: __dirname });
+  });
+
+  //when a user requests / then return the api-home.html
+  app.get('/api', (req, res) => {
+    res.sendFile('api-home.html', { root: __dirname });
+  });
 
   app.listen(4000, () => console.log('Server started on  http://localhost:4000'));
 })();

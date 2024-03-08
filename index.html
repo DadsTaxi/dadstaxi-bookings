@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dads Taxi Booking system v0.1 beta</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+    .footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dads Taxi Booking system v0.1 beta</h1>
+  <button id="loadData">Refresh Data</button>
+  <div id="output"></div>
+
+  <!-- add an hr -->
+  <hr>
+
+  <h2>Update Website</h2>
+  <form id="updateForm">
+    <label for="id">ID:</label><br>
+    <input type="text" id="id" name="id"><br>
+    <label for="website">New Website:</label><br>
+    <input type="text" id="website" name="website"><br>
+    <input type="submit" value="Update">
+  </form>
+
+  <footer>
+    <a href="/seed">/seed</a> - Seed the database with sample data</li>
+  </footer>
+
+  <script>
+    $(document).ready(function() {
+      $('#loadData').click(function() {
+        $.get('/all', function(data) {
+          $('#output').empty();
+          data.forEach(function(item) {
+            $('#output').append('<p>ID: ' + item.id + ', Name: ' + item.name + ', Website: ' + item.website + '</p>');
+          });
+        });
+      });
+
+      $('#updateForm').submit(function(e) {
+        e.preventDefault();
+        const id = $('#id').val();
+        const website = $('#website').val();
+
+        // url encode the id and website
+        urlencodedId = encodeURIComponent(id);
+        urlencodedWebsite = encodeURIComponent(website);
+
+        $.ajax({
+          url: 'http://localhost:4000/updateWebsite?id=' + urlencodedId + '&website=' + urlencodedWebsite,
+          type: 'GET',
+          success: function(result) {
+            // Do something with the result
+            alert('Website updated successfully');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
