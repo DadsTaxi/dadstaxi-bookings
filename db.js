@@ -13,7 +13,7 @@ class SQLiteDatabase {
     async init() {
         this.db.serialize(() => {
             this.db.run(`CREATE TABLE IF NOT EXISTS data (
-                id TEXT PRIMARY KEY, 
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 name TEXT,
                 website TEXT,
                 pickupAddress TEXT,
@@ -41,7 +41,7 @@ class SQLiteDatabase {
     //get a single record by id
     async get(id) {
         return new Promise((resolve, reject) => {
-            this.db.get(`SELECT * FROM data WHERE id = '${id}'`, (err, row) => {
+            this.db.get(`SELECT * FROM data WHERE id = ${id}`, (err, row) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -53,7 +53,7 @@ class SQLiteDatabase {
 
     async create(data) {
         return new Promise((resolve, reject) => {
-            this.db.run(`INSERT INTO data (id, name, website, pickupAddress, pickupTime) VALUES ('${data.id}', '${data.name}', '${data.website}', '${data.pickupAddress}', '${data.pickupTime}')`, (err) => {
+            this.db.run(`INSERT INTO data (id, name, website, pickupAddress, pickupTime) VALUES (${data.id}, '${data.name}', '${data.website}', '${data.pickupAddress}', '${data.pickupTime}')`, (err) => {
                 if (err) {
                     reject(err);
                 } else {           
@@ -70,7 +70,23 @@ class SQLiteDatabase {
                 website = '${updatedData.website}', 
                 pickupAddress = '${updatedData.pickupAddress}', 
                 pickupTime = '${updatedData.pickupTime}' 
-            WHERE id = '${id}'`;
+            WHERE id = ${id}`;
+            this.db.run(query,
+                function (err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+        });
+    }
+
+    async updateWebsite(id, updatedData) {
+        return new Promise((resolve, reject) => {
+            const query = `UPDATE data SET 
+                website = '${updatedData}'
+            WHERE id = ${id}`;
             this.db.run(query,
                 function (err) {
                     if (err) {
@@ -84,7 +100,7 @@ class SQLiteDatabase {
 
     async delete(id) {
         return new Promise((resolve, reject) => {
-            this.db.run(`DELETE FROM data WHERE id = '${id}'`, function (err) {
+            this.db.run(`DELETE FROM data WHERE id = ${id}`, function (err) {
                 if (err) {
                     reject(err);
                 } else {
