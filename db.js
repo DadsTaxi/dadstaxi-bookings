@@ -87,6 +87,10 @@ class SQLiteDatabase {
             const query = `UPDATE data SET 
                 website = '${updatedData}'
             WHERE id = ${id}`;
+
+            //log the query
+            console.log(query);
+            
             this.db.run(query,
                 function (err) {
                     if (err) {

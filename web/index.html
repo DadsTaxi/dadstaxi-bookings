@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Dads Taxi Booking system v0.1 beta</title>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- <style>
+    .footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style> -->
+</head>
+
+<body>
+  <header>
+    <h1>Dads Taxi Booking system v0.1 beta</h1>
+    <p>Bookings for trips to pickup your kids, pets or significant others</p>
+    <nav>
+      <button id="loadData">Show bookings</button>
+      <button id="seed" title="Seed the database with sample data">Seed test Data</button>
+      <button id="updateBooking">Update booking location</button>
+    </nav>
+  </header>
+  <div id="output"></div>
+
+  <div id="update-bookings">
+    <h2>Update booking location</h2>
+    <p>Update the location URL for a booking</p>
+    <form id="updateForm">
+      <label for="id">ID:</label><br>
+      <input type="text" id="id" name="id"><br>
+      <label for="website">New Website:</label><br>
+      <input type="text" id="website" name="website"><br>
+      <input type="submit" value="Update">
+    </form>
+  </div>
+  <footer>
+  </footer>
+
+  <script>
+
+    const itemTemplate = (item) => {
+      return `<p><strong>ID:</strong> ${item.id}, 
+        <strong>Name:</strong> ${item.name}, 
+        <strong>Time:</strong> ${item.pickupTime}, 
+        <strong>Map URL:</strong> <a href='${item.website}' target='_blank'>${item.website}</a></p>`;
+    }
+
+    function displayData(data) {
+      $('#output').empty();
+      data.forEach(function (item) {
+        $('#output').append(itemTemplate(item));
+      });
+      $('#output').fadeIn();
+    }
+
+    function hideOutputs() {
+      $('#output').hide();
+      $('#update-bookings').hide();
+    }
+
+    $(document).ready(function () {
+
+      $('#update-bookings').hide();
+
+      $('#updateBooking').click(function () {
+        $('#update-bookings').show();
+        $('#output').hide();
+      });
+
+      $('#loadData').click(function () {
+        $.get('/api/all', function (data) {
+          displayData(data);
+        });
+      });
+
+      $('#seed').click(function () {
+        $.get('/api/seed', function (data) {
+          displayData(data);
+        });
+      });
+
+      $('#updateForm').submit(function (e) {
+        e.preventDefault();
+        const id = $('#id').val();
+        const website = $('#website').val();
+
+        // url encode the id and website
+        urlencodedId = encodeURIComponent(id);
+        urlencodedWebsite = encodeURIComponent(website);
+
+        $.ajax({
+          url: '/api/updateWebsite?id=' + urlencodedId + '&website=' + urlencodedWebsite,
+          type: 'GET',
+          success: function (result) {
+            // Do something with the result
+            alert('Website updated successfully');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

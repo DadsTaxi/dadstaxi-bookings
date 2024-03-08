@@ -7,11 +7,11 @@ app.use(express.json());
   const db = new SQLDB('data.db');
   await db.init(); // Ensure the database is initialized
 
-  app.get('/seed', async (req, res) => {
+  app.get('/api/seed', async (req, res) => {
     const john = {
       id: 1,
       name: 'John Doe',
-      website: 'https://example.com',
+      website: 'https://osm.org/go/uN~RapNx?m=',
       pickupAddress: '123 Main St',
       pickupTime: '1015'
     };
@@ -27,7 +27,7 @@ app.use(express.json());
     const baby = {
       id: 2,
       name: 'Baby Doe',
-      website: 'https://example.com',
+      website: 'https://osm.org/go/euu6ARXXm-?m=',
       pickupAddress: '123 Main St',
       pickupTime: '1115'
     };
@@ -37,7 +37,7 @@ app.use(express.json());
     const dog = {
       id: 3,
       name: 'Dog Doe',
-      website: 'https://example.com',
+      website: 'https://osm.org/go/euutfFQrz-?m=',
       pickupAddress: '123 Main St',
       pickupTime: '1215'
     };
@@ -47,29 +47,30 @@ app.use(express.json());
     const cat = {
       id: 4,
       name: 'Cat Doe',
-      website: 'https://example.com',
+      website: 'https://osm.org/go/WPokyaLhS?m=',
       pickupAddress: '123 Main St',
       pickupTime: '1315'
     };
     await db.create(cat);
 
-    res.status(201).send('Records created');
+    const all = await db.getAll();
+    res.json(all);
   });
 
 
-  app.get('/create', async (req, res) => {
+  app.get('/api/create', async (req, res) => {
     const record = req.body;
     await db.create(record);
     res.status(201).send('Record created');
   });
 
-  app.get('/all', async (req, res) => {
+  app.get('/api/all', async (req, res) => {
     const all = await db.getAll();
     res.json(all);
   });
 
   //updatewebsite by id
-  app.get('/updateWebsite', async (req, res) => {
+  app.get('/api/updateWebsite', async (req, res) => {
     const id = req.query.id;
     const website = req.query.website;
     await db.updateWebsite(id, website);
@@ -77,14 +78,11 @@ app.use(express.json());
   });
 
   //when a user requests / then return the api-home.html
-  app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: __dirname });
+  app.get('/api', (req, res) => {
+    res.sendFile('web/api-home.html', { root: __dirname });
   });
 
-  //when a user requests / then return the api-home.html
-  app.get('/api', (req, res) => {
-    res.sendFile('api-home.html', { root: __dirname });
-  });
+  app.use(express.static('web')); // Serve static files from 'web' directory
 
   app.listen(4000, () => console.log('Server started on  http://localhost:4000'));
 })();
