@@ -24,7 +24,21 @@ async function main() {
   const jane = await db.get('DOE'); // Get updated record
   console.log('Jane Doe:', jane);
 
+  //add another record BD baby doe
+  await db.create({ 
+    id: 'BABY', 
+    name: 'Baby Doe',
+    website: 'https://example.com',
+    pickupAddress: '123 Main St',
+    pickupTime: '1115'
+  });
+
+  //output all records
+  const all = await db.getAll();
+  console.log('All:', all);
+
   await db.delete('DOE'); // Delete the record
+  await db.delete('BABY'); // Delete the record
   await db.close();
 }
 
