@@ -13,14 +13,17 @@ class SQLiteDatabase {
     async init() {
         this.db.serialize(() => {
             this.db.run(`CREATE TABLE IF NOT EXISTS data (
-                            id INTEGER PRIMARY KEY, 
-                            name TEXT
+                id TEXT PRIMARY KEY, 
+                name TEXT,
+                website TEXT,
+                pickupAddress TEXT,
+                pickupTime TEXT
                         )`, function (err) {
                 if (err) {
                     console.error(`Error creating table: ${err}`);
                 }
             });
-        }); // Add closing parenthesis here
+        });
     }
 
     async getAll() {
@@ -35,28 +38,40 @@ class SQLiteDatabase {
         });
     }
 
-    async create(data) {
+    //get a single record by id
+    async get(id) {
         return new Promise((resolve, reject) => {
-            this.db.run('INSERT INTO data (name) VALUES (?)', [data.name], (err) => {
+            this.db.get(`SELECT * FROM data WHERE id = '${id}'`, (err, row) => {
                 if (err) {
                     reject(err);
                 } else {
-                    this.db.get('SELECT last_insert_rowid() as id', [], (err, row) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            data.id = row.id;
-                            resolve(data);
-                        }
-                    });
+                    resolve(row);
                 }
+            });
+        });
+    }
+
+    async create(data) {
+        return new Promise((resolve, reject) => {
+            this.db.run(`INSERT INTO data (id, name, website, pickupAddress, pickupTime) VALUES ('${data.id}', '${data.name}', '${data.website}', '${data.pickupAddress}', '${data.pickupTime}')`, (err) => {
+                if (err) {
+                    reject(err);
+                } else {           
+                     resolve(data);
+               }
             });
         });
     }
 
     async update(id, updatedData) {
         return new Promise((resolve, reject) => {
-            this.db.run('UPDATE data SET name = ? WHERE id = ?', [updatedData.name, id],
+            const query = `UPDATE data SET 
+                name = '${updatedData.name}', 
+                website = '${updatedData.website}', 
+                pickupAddress = '${updatedData.pickupAddress}', 
+                pickupTime = '${updatedData.pickupTime}' 
+            WHERE id = '${id}'`;
+            this.db.run(query,
                 function (err) {
                     if (err) {
                         reject(err);
@@ -69,7 +84,7 @@ class SQLiteDatabase {
 
     async delete(id) {
         return new Promise((resolve, reject) => {
-            this.db.run('DELETE FROM data WHERE id = ?', [id], function (err) {
+            this.db.run(`DELETE FROM data WHERE id = '${id}'`, function (err) {
                 if (err) {
                     reject(err);
                 } else {
