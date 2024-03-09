@@ -17,12 +17,13 @@
 
 <body>
   <header>
+    <img src="/icons/logo-au.png" alt="Dads taxi logo" style="height: 100px;">
     <h1>Dads Taxi Booking system v0.1 beta</h1>
     <p>Bookings for trips to pickup your kids, pets or significant others</p>
     <nav>
-      <button id="loadData">Show bookings</button>
-      <button id="seed" title="Seed the database with sample data">Seed test Data</button>
-      <button id="updateBooking">Update booking location</button>
+      <button id="btnLoadData">Show bookings</button>
+      <button id="btnNewBooking">Create new booking</button>
+      <button id="btnUpdateBooking">Update booking</button>
     </nav>
   </header>
   <div id="output"></div>
@@ -33,12 +34,30 @@
     <form id="updateForm">
       <label for="id">ID:</label><br>
       <input type="text" id="id" name="id"><br>
-      <label for="website">New Website:</label><br>
+      <label for="website">Updated Location URL:</label><br>
       <input type="text" id="website" name="website"><br>
       <input type="submit" value="Update">
     </form>
   </div>
+
+  <div id="create-new-booking">
+    <h2>Create a new booking</h2>
+    <p>Create a new booking</p>
+    <form id="createForm">
+      <label for="newName">Name:</label><br>
+      <input type="text" id="newName" name="newName"><br>
+      <label for="newPickupTime">Pickup Time:</label><br>
+      <input type="text" id="newPickupTime" name="pickupTime"><br>
+      <label for="newWebsite">Map URL:</label><br>
+      <input type="text" id="newWebsite" name="newWebsite"><br>
+      <button id="btnCreate">Create</button>
+    </form>
+  </div>
   <footer>
+    <p>&copy; 2024 Dads Taxi All rights reserved.</p>
+    <button id="btnSeed" title="Seed the database with sample data">Seed test Data</button>
+    <p>This site has deliberate vulnerabilities</p>
+    <a href="/api">API documentation</a>
   </footer>
 
   <script>
@@ -50,37 +69,65 @@
         <strong>Map URL:</strong> <a href='${item.website}' target='_blank'>${item.website}</a></p>`;
     }
 
+    function hideOutputs() {
+      $('#output').hide();
+      $('#update-bookings').hide();
+      $('#create-new-booking').hide();
+    }
+
     function displayData(data) {
+      hideOutputs();
       $('#output').empty();
       data.forEach(function (item) {
         $('#output').append(itemTemplate(item));
       });
-      $('#output').fadeIn();
-    }
-
-    function hideOutputs() {
-      $('#output').hide();
-      $('#update-bookings').hide();
+      $('#output').fadeIn(2000);
     }
 
     $(document).ready(function () {
 
-      $('#update-bookings').hide();
+      hideOutputs();
 
-      $('#updateBooking').click(function () {
+      $('#btnUpdateBooking').click(function () {
+        hideOutputs();
         $('#update-bookings').show();
-        $('#output').hide();
       });
 
-      $('#loadData').click(function () {
+      $('#btnNewBooking').click(function () {
+        hideOutputs();
+        $('#create-new-booking').show();
+      });
+
+      $('#btnLoadData').click(function () {
         $.get('/api/all', function (data) {
           displayData(data);
         });
       });
 
-      $('#seed').click(function () {
+      $('#btnSeed').click(function () {
         $.get('/api/seed', function (data) {
           displayData(data);
+        });
+      });
+
+      $('#btnCreate').click(function (e) {
+        e.preventDefault();
+        const newName = $('#newName').val();
+        const newPickupTime = $('#newPickupTime').val();
+        const newWebsite = $('#newWebsite').val();
+
+        // url encode the name, pickupTime and website
+        urlencodedName = encodeURIComponent(newName);
+        urlencodedPickupTime = encodeURIComponent(newPickupTime);
+        urlencodedWebsite = encodeURIComponent(newWebsite);
+
+        $.ajax({
+          url: '/api/create?name=' + urlencodedName + '&pickupTime=' + urlencodedPickupTime + '&website=' + urlencodedWebsite,
+          type: 'GET',
+          success: function (result) {
+            // Do something with the result
+            alert('Booking created successfully');
+          }
         });
       });
 

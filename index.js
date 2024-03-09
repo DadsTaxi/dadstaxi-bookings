@@ -59,7 +59,11 @@ app.use(express.json());
 
 
   app.get('/api/create', async (req, res) => {
-    const record = req.body;
+    const record = {
+      name: req.query.name,
+      website: req.query.website,
+      pickupTime: req.query.pickupTime
+    };
     await db.create(record);
     res.status(201).send('Record created');
   });

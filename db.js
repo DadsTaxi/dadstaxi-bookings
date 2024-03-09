@@ -53,6 +53,12 @@ class SQLiteDatabase {
 
     async create(data) {
         return new Promise((resolve, reject) => {
+
+            //if data.id is not provided, set it to null
+            if (!data.id) {
+                data.id = null;
+            }
+
             this.db.run(`INSERT INTO data (id, name, website, pickupAddress, pickupTime) VALUES (${data.id}, '${data.name}', '${data.website}', '${data.pickupAddress}', '${data.pickupTime}')`, (err) => {
                 if (err) {
                     reject(err);
@@ -90,7 +96,7 @@ class SQLiteDatabase {
 
             //log the query
             console.log(query);
-            
+
             this.db.run(query,
                 function (err) {
                     if (err) {
