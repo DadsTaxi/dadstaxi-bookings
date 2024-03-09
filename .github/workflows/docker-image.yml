@@ -13,8 +13,7 @@ jobs:
 
 
     env:
-      repo_name: ${{ github.repository }} # lowercase repo name
-      lowercase_repo_name: repo_name | lower
+      lowercase_repo_name: dadstaxi/dadstaxi-bookings
 
     steps:
     - uses: actions/checkout@v4
