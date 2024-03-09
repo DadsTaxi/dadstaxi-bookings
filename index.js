@@ -1,3 +1,4 @@
+const port = process.env.PORT || 4000;
 const SQLDB = require('./db');
 const express = require('express');
 const app = express();
@@ -88,5 +89,5 @@ app.use(express.json());
 
   app.use(express.static('web')); // Serve static files from 'web' directory
 
-  app.listen(4000, () => console.log('Server started on  http://localhost:4000'));
+  app.listen(port, () => console.log('Server started on  http://localhost:' + port));
 })();
