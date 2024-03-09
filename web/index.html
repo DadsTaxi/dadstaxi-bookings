@@ -55,9 +55,9 @@
   </div>
   <footer>
     <p>&copy; 2024 Dads Taxi All rights reserved.</p>
-    <button id="btnSeed" title="Seed the database with sample data">Seed test Data</button>
     <p>This site has deliberate vulnerabilities</p>
-    <a href="/api">API documentation</a>
+    <a id="btnSeed" href="#" onclick="seedDatabase()">Seed the database with sample data</a>
+    or <a href="/api">View API documentation</a>
   </footer>
 
   <script>
@@ -84,72 +84,73 @@
       $('#output').fadeIn(2000);
     }
 
-    $(document).ready(function () {
+    function seedDatabase() {
+      $.get('/api/seed', function (data) {
+        displayData(data);
+      });
+    }
 
-      hideOutputs();
 
-      $('#btnUpdateBooking').click(function () {
+      $(document).ready(function () {
+
         hideOutputs();
-        $('#update-bookings').show();
-      });
 
-      $('#btnNewBooking').click(function () {
-        hideOutputs();
-        $('#create-new-booking').show();
-      });
+        $('#btnUpdateBooking').click(function () {
+          hideOutputs();
+          $('#update-bookings').show();
+        });
 
-      $('#btnLoadData').click(function () {
-        $.get('/api/all', function (data) {
-          displayData(data);
+        $('#btnNewBooking').click(function () {
+          hideOutputs();
+          $('#create-new-booking').show();
+        });
+
+        $('#btnLoadData').click(function () {
+          $.get('/api/all', function (data) {
+            displayData(data);
+          });
+        });
+
+        $('#btnCreate').click(function (e) {
+          e.preventDefault();
+          const newName = $('#newName').val();
+          const newPickupTime = $('#newPickupTime').val();
+          const newWebsite = $('#newWebsite').val();
+
+          // url encode the name, pickupTime and website
+          urlencodedName = encodeURIComponent(newName);
+          urlencodedPickupTime = encodeURIComponent(newPickupTime);
+          urlencodedWebsite = encodeURIComponent(newWebsite);
+
+          $.ajax({
+            url: '/api/create?name=' + urlencodedName + '&pickupTime=' + urlencodedPickupTime + '&website=' + urlencodedWebsite,
+            type: 'GET',
+            success: function (result) {
+              // Do something with the result
+              alert('Booking created successfully');
+            }
+          });
+        });
+
+        $('#updateForm').submit(function (e) {
+          e.preventDefault();
+          const id = $('#id').val();
+          const website = $('#website').val();
+
+          // url encode the id and website
+          urlencodedId = encodeURIComponent(id);
+          urlencodedWebsite = encodeURIComponent(website);
+
+          $.ajax({
+            url: '/api/updateWebsite?id=' + urlencodedId + '&website=' + urlencodedWebsite,
+            type: 'GET',
+            success: function (result) {
+              // Do something with the result
+              alert('Website updated successfully');
+            }
+          });
         });
       });
-
-      $('#btnSeed').click(function () {
-        $.get('/api/seed', function (data) {
-          displayData(data);
-        });
-      });
-
-      $('#btnCreate').click(function (e) {
-        e.preventDefault();
-        const newName = $('#newName').val();
-        const newPickupTime = $('#newPickupTime').val();
-        const newWebsite = $('#newWebsite').val();
-
-        // url encode the name, pickupTime and website
-        urlencodedName = encodeURIComponent(newName);
-        urlencodedPickupTime = encodeURIComponent(newPickupTime);
-        urlencodedWebsite = encodeURIComponent(newWebsite);
-
-        $.ajax({
-          url: '/api/create?name=' + urlencodedName + '&pickupTime=' + urlencodedPickupTime + '&website=' + urlencodedWebsite,
-          type: 'GET',
-          success: function (result) {
-            // Do something with the result
-            alert('Booking created successfully');
-          }
-        });
-      });
-
-      $('#updateForm').submit(function (e) {
-        e.preventDefault();
-        const id = $('#id').val();
-        const website = $('#website').val();
-
-        // url encode the id and website
-        urlencodedId = encodeURIComponent(id);
-        urlencodedWebsite = encodeURIComponent(website);
-
-        $.ajax({
-          url: '/api/updateWebsite?id=' + urlencodedId + '&website=' + urlencodedWebsite,
-          type: 'GET',
-          success: function (result) {
-            // Do something with the result
-            alert('Website updated successfully');
-          }
-        });
-      });
-    });
   </script>
 </body>
 
